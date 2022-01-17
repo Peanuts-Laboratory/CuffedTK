@@ -31,12 +31,20 @@ namespace CuffedTK
 
             // Player
             Exiled.Events.Handlers.Player.Hurting += eventHandler.onHurting;
+            Exiled.Events.Handlers.Player.Handcuffing += eventHandler.OnCuffing;
+            Exiled.Events.Handlers.Player.RemovingHandcuffs += eventHandler.OnRemovingCuffs;
+            Exiled.Events.Handlers.Player.Dying += eventHandler.OnDeath;
+            Exiled.Events.Handlers.Player.Escaping += eventHandler.OnEscape;
         }
 
         private void unregisterEvents()
         {
             // Player
             Exiled.Events.Handlers.Player.Hurting -= eventHandler.onHurting;
+            Exiled.Events.Handlers.Player.Handcuffing -= eventHandler.OnCuffing;
+            Exiled.Events.Handlers.Player.RemovingHandcuffs -= eventHandler.OnRemovingCuffs;
+            Exiled.Events.Handlers.Player.Dying -= eventHandler.OnDeath;
+            Exiled.Events.Handlers.Player.Escaping -= eventHandler.OnEscape;
 
             eventHandler = null;
         }
