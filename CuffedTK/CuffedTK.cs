@@ -1,4 +1,5 @@
 ﻿using Exiled.API.Features;
+using Exiled.API.Enums;
 using System;
 
 namespace CuffedTK
@@ -10,8 +11,10 @@ namespace CuffedTK
         public override string Prefix => "CTK";
         public override Version Version => new Version(1, 9, 1);
         public override Version RequiredExiledVersion => new Version(4, 2, 2);
+        public override PluginPriority Priority { get; } = PluginPriority.Highest;
 
         private EventHandler eventHandler;
+
 
         public override void OnEnabled()
         {
@@ -19,11 +22,13 @@ namespace CuffedTK
             base.OnEnabled();
         }
 
+
         public override void OnDisabled()
         {
             unregisterEvents();
             base.OnDisabled();
         }
+
 
         private void registerEvents()
         {
@@ -35,7 +40,9 @@ namespace CuffedTK
             Exiled.Events.Handlers.Player.RemovingHandcuffs += eventHandler.OnRemovingCuffs;
             Exiled.Events.Handlers.Player.Dying += eventHandler.OnDeath;
             Exiled.Events.Handlers.Player.Escaping += eventHandler.OnEscape;
+            Exiled.Events.Handlers.Player.ChangingRole += eventHandler.OnForceClass;
         }
+
 
         private void unregisterEvents()
         {
@@ -45,6 +52,7 @@ namespace CuffedTK
             Exiled.Events.Handlers.Player.RemovingHandcuffs -= eventHandler.OnRemovingCuffs;
             Exiled.Events.Handlers.Player.Dying -= eventHandler.OnDeath;
             Exiled.Events.Handlers.Player.Escaping -= eventHandler.OnEscape;
+            Exiled.Events.Handlers.Player.ChangingRole -= eventHandler.OnForceClass;
 
             eventHandler = null;
         }

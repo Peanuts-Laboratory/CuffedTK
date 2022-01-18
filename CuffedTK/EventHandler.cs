@@ -12,6 +12,7 @@ namespace CuffedTK
 
         private Dictionary<Player, Player> cuffedDict = new Dictionary<Player, Player>();
 
+
         public void OnCuffing(HandcuffingEventArgs ev)
         {
             if (plugin.Config.Debug) { Log.Debug($"{ev.Cuffer.Nickname} is cuffing {ev.Target.Nickname}"); }
@@ -81,6 +82,24 @@ namespace CuffedTK
                     if (cuffedDict[player] == ev.Player)
                     {
                         if (plugin.Config.Debug) { Log.Debug($"{ev.Player.Nickname} is escaping, removing from cuffedDict"); }
+
+                        cuffedDict.Remove(player);
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        public void OnForceClass(ChangingRoleEventArgs ev)
+        {
+            if (cuffedDict.ContainsValue(ev.Player))
+            {
+                foreach (Player player in cuffedDict.Keys)
+                {
+                    if (cuffedDict[player] == ev.Player)
+                    {
+                        if (plugin.Config.Debug) { Log.Debug($"{ev.Player.Nickname} is changing class, removing from cuffedDict"); }
 
                         cuffedDict.Remove(player);
                         break;
