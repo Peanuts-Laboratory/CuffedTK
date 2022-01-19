@@ -56,24 +56,6 @@ namespace CuffedTK
         }
 
 
-        public void OnDeath(DyingEventArgs ev)
-        {
-            if (cuffedDict.ContainsKey(ev.Target))
-            {
-                foreach (Player player in cuffedDict.Keys)
-                {
-                    if (player == ev.Target)
-                    {
-                        if (plugin.Config.Debug) { Log.Debug($"{ev.Killer.Nickname} has killed {ev.Target.Nickname} while cuffed, removing from cuffedDict"); }
-
-                        cuffedDict.Remove(player);
-                        break;
-                    }
-                }
-            }
-        }
-
-
         public void OnEscape(EscapingEventArgs ev)
         {
             if (cuffedDict.ContainsKey(ev.Player))
@@ -92,7 +74,7 @@ namespace CuffedTK
         }
 
 
-        public void OnForceClass(ChangingRoleEventArgs ev)
+        public void OnChangeClass(ChangingRoleEventArgs ev)
         {
             if (cuffedDict.ContainsKey(ev.Player))
             {
