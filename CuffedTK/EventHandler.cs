@@ -20,13 +20,13 @@ namespace CuffedTK
 
             if (ev.IsAllowed)
             {
-                cuffedDict.Add(ev.Cuffer, ev.Target);
+                cuffedDict.Add(ev.Target, ev.Cuffer);
             }
 
 
             if (plugin.Config.Debug)
             {
-                Log.Debug("Current cuffedDict<cuffer, target> is:");
+                Log.Debug("Current cuffedDict<target, cuffer> is:");
                 foreach (var key in cuffedDict.Keys)
                 {
                     Log.Debug($"{key.Nickname} -> {cuffedDict[key].Nickname}");
@@ -34,15 +34,16 @@ namespace CuffedTK
             }
         }
 
+
         public void OnRemovingCuffs(RemovingHandcuffsEventArgs ev)
         {
             if (ev.IsAllowed)
             {
-                if (cuffedDict.ContainsValue(ev.Target))
+                if (cuffedDict.ContainsKey(ev.Target))
                 {
                     foreach (Player player in cuffedDict.Keys)
                     {
-                        if (cuffedDict[player] == ev.Target)
+                        if (player == ev.Target)
                         {
                             if (plugin.Config.Debug) { Log.Debug($"{ev.Cuffer.Nickname} is removing cuffs on {ev.Target.Nickname}"); }
 
@@ -57,11 +58,11 @@ namespace CuffedTK
 
         public void OnDeath(DyingEventArgs ev)
         {
-            if (cuffedDict.ContainsValue(ev.Target))
+            if (cuffedDict.ContainsKey(ev.Target))
             {
                 foreach (Player player in cuffedDict.Keys)
                 {
-                    if (cuffedDict[player] == ev.Target)
+                    if (player == ev.Target)
                     {
                         if (plugin.Config.Debug) { Log.Debug($"{ev.Killer.Nickname} has killed {ev.Target.Nickname} while cuffed, removing from cuffedDict"); }
 
@@ -75,11 +76,11 @@ namespace CuffedTK
 
         public void OnEscape(EscapingEventArgs ev)
         {
-            if (cuffedDict.ContainsValue(ev.Player))
+            if (cuffedDict.ContainsKey(ev.Player))
             {
                 foreach (Player player in cuffedDict.Keys)
                 {
-                    if (cuffedDict[player] == ev.Player)
+                    if (player == ev.Player)
                     {
                         if (plugin.Config.Debug) { Log.Debug($"{ev.Player.Nickname} is escaping, removing from cuffedDict"); }
 
@@ -93,11 +94,11 @@ namespace CuffedTK
 
         public void OnForceClass(ChangingRoleEventArgs ev)
         {
-            if (cuffedDict.ContainsValue(ev.Player))
+            if (cuffedDict.ContainsKey(ev.Player))
             {
                 foreach (Player player in cuffedDict.Keys)
                 {
-                    if (cuffedDict[player] == ev.Player)
+                    if (player == ev.Player)
                     {
                         if (plugin.Config.Debug) { Log.Debug($"{ev.Player.Nickname} is changing class, removing from cuffedDict"); }
 
@@ -113,7 +114,7 @@ namespace CuffedTK
         {
             if (!ev.Target.IsCuffed || ev.Target == null || ev.Attacker == null || ev.Handler.Type == DamageType.Unknown) return;
             // only the cuffer can damage them
-            if (cuffedDict.ContainsKey(ev.Attacker) && cuffedDict[ev.Attacker] == ev.Target) return;
+            if (cuffedDict.ContainsKey(ev.Target) && cuffedDict[ev.Target] == ev.Attacker) return;
          
             if (plugin.Config.DisallowedDamageTypes.Contains(ev.Handler.Type) && (ev.Target.Team == Team.CDP || ev.Target.Team == Team.RSC))
             {
