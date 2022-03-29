@@ -45,7 +45,9 @@ namespace CuffedTK
                     {
                         if (player == ev.Target)
                         {
-                            if (plugin.Config.Debug) { Log.Debug($"{ev.Cuffer.Nickname} is removing cuffs on {ev.Target.Nickname}"); }
+                            if (plugin.Config.Debug) { Log.Debug($"{ev.Cuffer} is removing cuffs on {ev.Target.Nickname}"); }
+
+                            ev.Cuffer.ShowHint("Uncuffing to kill will result in a ban", duration: 5);
 
                             cuffedDict.Remove(player);
                             break;
@@ -98,19 +100,19 @@ namespace CuffedTK
             // only the cuffer can damage them
             if (cuffedDict.ContainsKey(ev.Target) && cuffedDict[ev.Target] == ev.Attacker) return;
          
-            if (plugin.Config.DisallowedDamageTypes.Contains(ev.Handler.Type) && (ev.Target.Team == Team.CDP || ev.Target.Team == Team.RSC))
+            if (plugin.Config.DisallowedDamageTypes.Contains(ev.Handler.Type) && (ev.Target.Role.Team == Team.CDP || ev.Target.Role.Team == Team.RSC))
             {
                 if (plugin.Config.DamageTypesTime > 0)
                     ev.Attacker.ShowHint(plugin.Config.DamageTypesMessage.Replace("%PLAYER%", ev.Target.Nickname).Replace("%DAMAGETYPE%", ev.Handler.Type.ToString()), plugin.Config.DamageTypesTime);
                 ev.IsAllowed = false;
             }
-            else if ((ev.Target.Team == Team.CDP && plugin.Config.DisallowDamagetodclass.Contains(ev.Attacker.Team)) || (ev.Target.Team == Team.RSC && plugin.Config.DisallowDamagetoScientists.Contains(ev.Attacker.Team)))
+            else if ((ev.Target.Role.Team == Team.CDP && plugin.Config.DisallowDamagetodclass.Contains(ev.Attacker.Role.Team)) || (ev.Target.Role.Team == Team.RSC && plugin.Config.DisallowDamagetoScientists.Contains(ev.Attacker.Role.Team)))
             {
                 if (plugin.Config.AttackerHintTime > 0)
                     ev.Attacker.ShowHint(plugin.Config.AttackerHint.Replace("%PLAYER%", ev.Target.Nickname), plugin.Config.AttackerHintTime);
                 ev.IsAllowed = false;
             }
-            else if ((plugin.Config.DisallowDamageToChaos && ev.Target.Team == Team.CHI && plugin.Config.DisallowDamagetodclass.Contains(ev.Attacker.Team)) || (plugin.Config.DisallowDamageToMTF && ev.Target.Team == Team.MTF && plugin.Config.DisallowDamagetoScientists.Contains(ev.Attacker.Team)))
+            else if ((plugin.Config.DisallowDamageToChaos && ev.Target.Role.Team == Team.CHI && plugin.Config.DisallowDamagetodclass.Contains(ev.Attacker.Role.Team)) || (plugin.Config.DisallowDamageToMTF && ev.Target.Role.Team == Team.MTF && plugin.Config.DisallowDamagetoScientists.Contains(ev.Attacker.Role.Team)))
             {
                 if (plugin.Config.AttackerHintTime > 0)
                     ev.Attacker.ShowHint(plugin.Config.AttackerHint.Replace("%PLAYER%", ev.Target.Nickname), plugin.Config.AttackerHintTime);
