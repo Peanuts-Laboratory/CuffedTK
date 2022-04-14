@@ -18,18 +18,17 @@ namespace CuffedTK
             if (plugin.Config.Debug) { Log.Debug($"{ev.Cuffer.Nickname} is cuffing {ev.Target.Nickname}"); }
 
 
-            if (ev.IsAllowed)
+            if (ev.IsAllowed && !cuffedDict.ContainsKey(ev.Target))
             {
                 cuffedDict.Add(ev.Target, ev.Cuffer);
-            }
 
-
-            if (plugin.Config.Debug)
-            {
-                Log.Debug("Current cuffedDict<target, cuffer> is:");
-                foreach (var key in cuffedDict.Keys)
+                if (plugin.Config.Debug)
                 {
-                    Log.Debug($"{key.Nickname} -> {cuffedDict[key].Nickname}");
+                    Log.Debug("Current cuffedDict<target, cuffer> is:");
+                    foreach (var key in cuffedDict.Keys)
+                    {
+                        Log.Debug($"{key.Nickname} -> {cuffedDict[key].Nickname}");
+                    }
                 }
             }
         }
