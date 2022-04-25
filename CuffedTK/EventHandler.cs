@@ -12,6 +12,12 @@ namespace CuffedTK
 
         private Dictionary<Player, Player> cuffedDict = new Dictionary<Player, Player>();
 
+        public void OnWaitingForPlayers()
+        {
+            Log.Info(message: "Loaded and waiting for players...");
+            cuffedDict.Clear();
+        }
+
 
         public void OnCuffing(HandcuffingEventArgs ev)
         {
