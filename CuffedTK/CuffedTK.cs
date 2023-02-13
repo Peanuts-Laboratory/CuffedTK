@@ -7,10 +7,10 @@ namespace CuffedTK
     public class CuffedTK : Plugin<Config>
     {
         public override string Name => "CuffedTK";
-        public override string Author => "Marco15453";
+        public override string Author => "Marco15453 -> Drew";
         public override string Prefix => "CTK";
-        public override Version Version => new Version(1, 9, 1);
-        public override Version RequiredExiledVersion => new Version(4, 2, 2);
+        public override Version Version => new Version(2, 0, 0);
+        public override Version RequiredExiledVersion => new Version(6, 0, 0);
         public override PluginPriority Priority { get; } = PluginPriority.Highest;
 
         private EventHandler eventHandler;
@@ -40,6 +40,9 @@ namespace CuffedTK
             Exiled.Events.Handlers.Player.RemovingHandcuffs += eventHandler.OnRemovingCuffs;
             Exiled.Events.Handlers.Player.Escaping += eventHandler.OnEscape;
             Exiled.Events.Handlers.Player.ChangingRole += eventHandler.OnChangeClass;
+
+            // Server
+            Exiled.Events.Handlers.Server.WaitingForPlayers += eventHandler.OnWaitingForPlayers;
         }
 
 
@@ -51,6 +54,9 @@ namespace CuffedTK
             Exiled.Events.Handlers.Player.RemovingHandcuffs -= eventHandler.OnRemovingCuffs;
             Exiled.Events.Handlers.Player.Escaping -= eventHandler.OnEscape;
             Exiled.Events.Handlers.Player.ChangingRole -= eventHandler.OnChangeClass;
+
+            // Server
+            Exiled.Events.Handlers.Server.WaitingForPlayers -= eventHandler.OnWaitingForPlayers;
 
             eventHandler = null;
         }

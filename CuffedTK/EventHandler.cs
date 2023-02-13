@@ -2,6 +2,7 @@
 using Exiled.API.Enums;
 using Exiled.Events.EventArgs;
 using System.Collections.Generic;
+using Exiled.Events.EventArgs.Player;
 
 namespace CuffedTK
 {
@@ -18,19 +19,17 @@ namespace CuffedTK
             cuffedDict.Clear();
         }
 
-
         public void OnCuffing(HandcuffingEventArgs ev)
         {
-            if (plugin.Config.Debug) { Log.Debug($"{ev.Cuffer.Nickname} is cuffing {ev.Target.Nickname}"); }
-
+            if (plugin.Config.Debug) { Log.Debug($"{ev.Player.Nickname} is cuffing {ev.Target.Nickname}"); }
 
             if (ev.IsAllowed && !cuffedDict.ContainsKey(ev.Target))
             {
-                cuffedDict.Add(ev.Target, ev.Cuffer);
+                cuffedDict.Add(ev.Target, ev.Player);
 
                 if (plugin.Config.Debug)
                 {
-                    Log.Debug("Current cuffedDict<target, cuffer> is:");
+                    Log.Debug("Current cuffedDict<target, player> is:");
                     foreach (var key in cuffedDict.Keys)
                     {
                         Log.Debug($"{key.Nickname} -> {cuffedDict[key].Nickname}");
@@ -50,9 +49,9 @@ namespace CuffedTK
                     {
                         if (player == ev.Target)
                         {
-                            if (plugin.Config.Debug) { Log.Debug($"{ev.Cuffer} is removing cuffs on {ev.Target.Nickname}"); }
+                            if (plugin.Config.Debug) { Log.Debug($"{ev.Player.Nickname} is removing cuffs on {ev.Target.Nickname}"); }
 
-                            ev.Cuffer.ShowHint("Uncuffing to kill will result in a ban", duration: 5);
+                            ev.Player.ShowHint(plugin.Config.UncufferHint, plugin.Config.UncufferHintTime);
 
                             cuffedDict.Remove(player);
                             break;
@@ -101,27 +100,28 @@ namespace CuffedTK
 
         public void onHurting(HurtingEventArgs ev)
         {
-            if (!ev.Target.IsCuffed || ev.Target == null || ev.Attacker == null || ev.Handler.Type == DamageType.Unknown) return;
-            // only the cuffer can damage them
-            if (cuffedDict.ContainsKey(ev.Target) && cuffedDict[ev.Target] == ev.Attacker) return;
-         
-            if (plugin.Config.DisallowedDamageTypes.Contains(ev.Handler.Type) && (ev.Target.Role.Team == Team.CDP || ev.Target.Role.Team == Team.RSC))
+            if (!ev.Player.IsCuffed || ev.Player == null || ev.Attacker == null || ev.DamageHandler.Type == DamageType.Unknown) return;
+
+            // if a player is cuffed
+            if (ev.Player.IsCuffed)
             {
-                if (plugin.Config.DamageTypesTime > 0)
-                    ev.Attacker.ShowHint(plugin.Config.DamageTypesMessage.Replace("%PLAYER%", ev.Target.Nickname).Replace("%DAMAGETYPE%", ev.Handler.Type.ToString()), plugin.Config.DamageTypesTime);
+                // allow scp's to attack cuffed players
+                if (ev.Attacker.IsScp) return;
+
+                // they cannot be damaged by these damage sources
+                if (plugin.Config.DisallowedDamageTypes.Contains(ev.DamageHandler.Type))
+                {
+                    ev.IsAllowed = false;
+                    return;
+                }
+
+                // only the cuffer can damage them with the allowed damage types
+                if (cuffedDict.ContainsKey(ev.Player) && cuffedDict[ev.Player] == ev.Attacker) return;
+
+                // don't allow anyone else to damage them
+                ev.Attacker.ShowHint(plugin.Config.AttackerHint, plugin.Config.AttackerHintTime);
                 ev.IsAllowed = false;
-            }
-            else if ((ev.Target.Role.Team == Team.CDP && plugin.Config.DisallowDamagetodclass.Contains(ev.Attacker.Role.Team)) || (ev.Target.Role.Team == Team.RSC && plugin.Config.DisallowDamagetoScientists.Contains(ev.Attacker.Role.Team)))
-            {
-                if (plugin.Config.AttackerHintTime > 0)
-                    ev.Attacker.ShowHint(plugin.Config.AttackerHint.Replace("%PLAYER%", ev.Target.Nickname), plugin.Config.AttackerHintTime);
-                ev.IsAllowed = false;
-            }
-            else if ((plugin.Config.DisallowDamageToChaos && ev.Target.Role.Team == Team.CHI && plugin.Config.DisallowDamagetodclass.Contains(ev.Attacker.Role.Team)) || (plugin.Config.DisallowDamageToMTF && ev.Target.Role.Team == Team.MTF && plugin.Config.DisallowDamagetoScientists.Contains(ev.Attacker.Role.Team)))
-            {
-                if (plugin.Config.AttackerHintTime > 0)
-                    ev.Attacker.ShowHint(plugin.Config.AttackerHint.Replace("%PLAYER%", ev.Target.Nickname), plugin.Config.AttackerHintTime);
-                ev.IsAllowed = false;
+                return;
             }
         }
     }

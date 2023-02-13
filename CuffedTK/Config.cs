@@ -9,36 +9,15 @@ namespace CuffedTK
     {
         [Description("Should the plugin be enabled?")]
         public bool IsEnabled { get; set; } = true;
-
+        [Description("What hint should the Attacker be displayed when trying to damage a Cuffed player?")]
+        public string AttackerHint { get; set; } = "<color=red>That player is cuffed!</color>";
         [Description("For how long should the Hint be shown to the Attacker? (-1 = Disabled)")]
         public ushort AttackerHintTime { get; set; } = 3;
-
-        [Description("What hint should the Attacker be displayed when trying to damage a Cuffed D-Class? %PLAYER% will be replaced with the Target Username")]
-        public string AttackerHint { get; set; } = "<color=red>That player is cuffed!</color>";
-
-        [Description("What Team should not be allowed to damage an Cuffed D-Class! CDP = Class-D, CHI = Chaos, MTF = Nine-Tailed Fox, RSC = Scientists, TUT = Tutorial")]
-        public HashSet<Team> DisallowDamagetodclass { get; set; } = new HashSet<Team>
-        {
-            Team.MTF,
-            Team.RSC
-        };
-        [Description("Should Chaos be considered with the settings above (they will also take no dmg while cuffed)?")]
-        public bool DisallowDamageToChaos { get; set; } = true;
-        [Description("What Team should not be allowed to damage an Cuffed Scientists! CDP = Class-D, CHI = Chaos, MTF = Nine-Tailed Fox, RSC = Scientists, TUT = Tutorial")]
-        public HashSet<Team> DisallowDamagetoScientists { get; set; } = new HashSet<Team>
-        {
-            Team.CDP,
-            Team.CHI
-        };
-        [Description("Should MTF be considered with the settings above (they will also take no dmg while cuffed)?")]
-        public bool DisallowDamageToMTF { get; set; } = true;
-        [Description("For how long should the hint be shown to the Attacker? (-1 = Disabled)")]
-        public int DamageTypesTime { get; set; } = 3;
-
-        [Description("What hint should be displayed when trying to damage a Cuffed D-Class with a Disallowed DamageType? %PLAYER% will be replaced with the Target Username and %DAMAGETYPE% will be replaced with the DamageType")]
-        public string DamageTypesMessage { get; set; } = "<color=red>That player is cuffed!</color>";
-
-        [Description("What DamageType should not be allowed to damage a Cuffed D-Class or Cuffed Scientist? Check https://exiled-team.github.io/EXILED/api/Exiled.API.Enums.DamageType.html for all DamageTypes")]
+        [Description("What hint should any uncuffer be displayed when trying to uncuff a player?")]
+        public string UncufferHint { get; set; } = "<color=red>Uncuffing to kill will result in a ban</color>";
+        [Description("For how long should the Hint be shown to the Uncuffer? (-1 = Disabled)")]
+        public ushort UncufferHintTime { get; set; } = 3;
+        [Description("What DamageType should not be allowed to damage a cuffed player?")]
         public HashSet<DamageType> DisallowedDamageTypes { get; set; } = new HashSet<DamageType>
         {
             DamageType.Explosion,
