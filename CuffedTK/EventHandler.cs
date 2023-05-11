@@ -29,7 +29,7 @@ namespace CuffedTK
 
                 if (plugin.Config.Debug)
                 {
-                    Log.Debug("Current cuffedDict<target, player> is:");
+                    Log.Debug("\nCurrent cuffedDict<target, player> is:");
                     foreach (var key in cuffedDict.Keys)
                     {
                         Log.Debug($"{key.Nickname} -> {cuffedDict[key].Nickname}");
