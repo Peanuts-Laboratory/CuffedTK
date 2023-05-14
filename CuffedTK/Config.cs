@@ -23,6 +23,9 @@ namespace CuffedTK
             DamageType.Explosion,
             DamageType.FriendlyFireDetector
         };
+        [Description("Whether or not MTF/CI can 'escape' while disarmed to switch teams.")]
+        public bool disarm_can_switch_teams { get; set; } = true;
+
         public bool Debug { get; set; } = false;
     }
 }

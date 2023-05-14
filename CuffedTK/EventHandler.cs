@@ -1,8 +1,9 @@
 ﻿using Exiled.API.Features;
 using Exiled.API.Enums;
-using Exiled.Events.EventArgs;
+using Exiled.Events.EventArgs.Server;
 using System.Collections.Generic;
 using Exiled.Events.EventArgs.Player;
+using MEC;
 
 namespace CuffedTK
 {
@@ -12,11 +13,28 @@ namespace CuffedTK
         public EventHandler(CuffedTK plugin) => this.plugin = plugin;
 
         private Dictionary<Player, Player> cuffedDict = new Dictionary<Player, Player>();
+        private CoroutineHandle disarm_coroutine;
 
         public void OnWaitingForPlayers()
         {
             Log.Info(message: "Loaded and waiting for players...");
             cuffedDict.Clear();
+        }
+
+        public void OnRoundStarted()
+        {
+            if (plugin.Config.disarm_can_switch_teams)
+            {
+                disarm_coroutine = Timing.RunCoroutine(BetterDisarm());
+            }
+        }
+
+        public void OnRoundEnded(RoundEndedEventArgs ev)
+        {
+            if(plugin.Config.disarm_can_switch_teams)
+            {
+                Timing.KillCoroutines(disarm_coroutine);
+            }
         }
 
         public void OnCuffing(HandcuffingEventArgs ev)
@@ -100,7 +118,7 @@ namespace CuffedTK
 
         public void onHurting(HurtingEventArgs ev)
         {
-            if (!ev.Player.IsCuffed || ev.Player == null || ev.Attacker == null || ev.DamageHandler.Type == DamageType.Unknown) return;
+            if (!ev.Player.IsCuffed || ev.Player == null || ev.Attacker == null || ev == null || ev.DamageHandler.Type == DamageType.Unknown) return;
 
             // if a player is cuffed
             if (ev.Player.IsCuffed)
@@ -122,6 +140,39 @@ namespace CuffedTK
                 ev.Attacker.ShowHint(plugin.Config.AttackerHint, plugin.Config.AttackerHintTime);
                 ev.IsAllowed = false;
                 return;
+            }
+        }
+
+        // commonutils cuffed escaping couroutine
+        // credit: https://github.com/Exiled-Team/Common-Utils
+        private IEnumerator<float> BetterDisarm()
+        {
+            for (; ; )
+            {
+                yield return Timing.WaitForSeconds(.5f);
+
+                foreach (Player player in Player.List)
+                {
+                    if (!player.IsCuffed || (player.Role.Team != PlayerRoles.Team.ChaosInsurgency && player.Role.Team != PlayerRoles.Team.FoundationForces) || (Escape.WorldPos - player.Position).sqrMagnitude > Escape.RadiusSqr)
+                        continue;
+
+                    switch (player.Role.Type)
+                    {
+                        case PlayerRoles.RoleTypeId.FacilityGuard:
+                        case PlayerRoles.RoleTypeId.NtfPrivate:
+                        case PlayerRoles.RoleTypeId.NtfSergeant:
+                        case PlayerRoles.RoleTypeId.NtfCaptain:
+                        case PlayerRoles.RoleTypeId.NtfSpecialist:
+                            player.Role.Set(PlayerRoles.RoleTypeId.ChaosConscript, SpawnReason.Escaped, PlayerRoles.RoleSpawnFlags.All);
+                            break;
+                        case PlayerRoles.RoleTypeId.ChaosConscript:
+                        case PlayerRoles.RoleTypeId.ChaosMarauder:
+                        case PlayerRoles.RoleTypeId.ChaosRepressor:
+                        case PlayerRoles.RoleTypeId.ChaosRifleman:
+                            player.Role.Set(PlayerRoles.RoleTypeId.NtfPrivate, SpawnReason.Escaped, PlayerRoles.RoleSpawnFlags.All);
+                            break;
+                    }
+                }
             }
         }
     }

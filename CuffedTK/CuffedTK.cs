@@ -42,6 +42,8 @@ namespace CuffedTK
             Exiled.Events.Handlers.Player.ChangingRole += eventHandler.OnChangeClass;
 
             // Server
+            Exiled.Events.Handlers.Server.RoundStarted += eventHandler.OnRoundStarted;
+            Exiled.Events.Handlers.Server.RoundEnded += eventHandler.OnRoundEnded;
             Exiled.Events.Handlers.Server.WaitingForPlayers += eventHandler.OnWaitingForPlayers;
         }
 
@@ -56,6 +58,8 @@ namespace CuffedTK
             Exiled.Events.Handlers.Player.ChangingRole -= eventHandler.OnChangeClass;
 
             // Server
+            Exiled.Events.Handlers.Server.RoundStarted -= eventHandler.OnRoundStarted;
+            Exiled.Events.Handlers.Server.RoundEnded -= eventHandler.OnRoundEnded;
             Exiled.Events.Handlers.Server.WaitingForPlayers -= eventHandler.OnWaitingForPlayers;
 
             eventHandler = null;
